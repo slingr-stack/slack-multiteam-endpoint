@@ -1,0 +1,191 @@
+{
+    "label": "Slack",
+    "name": "slack",
+    "apiVersion": "v1",
+    "internal": false,
+    "configurationType": "GLOBAL",
+    "deployment": {
+        "jsEndpoint": true,
+        "profiles":[
+            {
+                "name": "default",
+                "label": "Default",
+                "memory": 128,
+                "description": "Default configuration for small teams"
+            },
+            {
+                "name": "team_0500",
+                "label": "Medium team",
+                "memory": 512,
+                "description": "Configured for medium teams (>500)"
+            },
+            {
+                "name": "team_1000",
+                "label": "Big team",
+                "memory": 1024,
+                "description": "Configuration for big teams (>1000 users)"
+            }
+        ],
+        "allowMultipleInstances": false
+    },
+    "icon48": "https://storage.googleapis.com/static.slingrs.io/platform/endpoints/slack.png",
+    "configurationHelpUrl": "/endpoints_slack.html#configuration",
+    "status": "ACTIVE",
+    "stores": [],
+    "events": [
+        {
+            "label": "Real time event",
+            "name": "eventArrived",
+            "description": "Happens when any real time event is received from Slack."
+        },
+        {
+            "label": "HTTP event",
+            "name": "httpEventArrived",
+            "description": "Happens when any event from events API is received from Slack."
+        },
+        {
+            "label": "Slash command",
+            "name": "slashCommand",
+            "description": "Happens when a slash command handled by the endpoint is called."
+        },
+        {
+            "label": "Interactive Message",
+            "name": "interactiveMessage",
+            "description": "Happens when a button in a message is pushed."
+        },
+        {
+            "label": "Options Load",
+            "name": "optionsLoad",
+            "description": "Happens when Slack needs to populate a dropdown with options."
+        },
+        {
+            "label": "File Downloaded",
+            "name": "fileDownloaded",
+            "description": "Happens when a async download file process is finished (thrown by a GET function with 'forceDownload' enabled and 'downloadSync' disabled)"
+        }
+    ],
+    "functions": [
+        {
+            "label": "GET",
+            "name": "get",
+            "description": "Sends a GET request"
+        },
+        {
+            "label": "POST",
+            "name": "post",
+            "description": "Sends a POST request"
+        },
+        {
+            "label": "Respond to slash command",
+            "name": "_respondToSlashCommand",
+            "description": "Responds to a slash command",
+            "links": [
+                "https://api.slack.com/slash-commands#responding_to_a_command"
+            ]
+        },
+        {
+            "label": "Respond to interactive message",
+            "name": "_respondToInteractiveMessage",
+            "description": "Responds the result to process an interactive message",
+            "links": [
+                "https://api.slack.com/docs/message-buttons"
+            ]
+        },
+        {
+            "label": "Internal call to download a file",
+            "name": "__downloadFile",
+            "description": "Internal call to download a file",
+            "callbacks": [
+                {
+                    "name": "fileDownloaded"
+                }
+            ]
+        },
+        {
+            "label": "Internal request",
+            "name": "__request"
+        },
+        {
+            "label": "Internal team conversion",
+            "name": "__convertTeam"
+        },
+        {
+            "label": "Internal user conversion",
+            "name": "__convertUser"
+        },
+        {
+            "label": "Internal channel conversion",
+            "name": "__convertChannel"
+        },
+        {
+            "label": "Internal timestamp conversion",
+            "name": "__convertTimestamp"
+        },
+        {
+            "label": "Internal event conversion",
+            "name": "__convertEvent"
+        }
+    ],
+    "scripts":[
+        "conversations.js",
+        "functions.js"
+    ],
+    "listeners":[
+        "conversations.js"
+    ],
+    "configuration":[
+        {
+            "name": "userApiToken",
+            "label": "User API token",
+            "description": "This is the API token for an user in Slack. Optional.",
+            "type": "text"
+        },
+        {
+            "name": "botApiToken",
+            "label": "Bot API token",
+            "description": "This is the API token for a bot user in Slack.",
+            "type": "text",
+            "required": true
+        },
+        {
+            "name": "slashCommandsToken",
+            "label": "Verification token",
+            "description": "Token provided to verify that requests are actually coming from Slack (OAuth Information -> Verification Token)",
+            "type": "text"
+        },
+        {
+            "name": "slashCommandsUrl",
+            "label": "Slash commands URL",
+            "description": "This is the URL you need to set as Request URL in each of you Slash commands.",
+            "type": "label",
+            "value": "config.WEBHOOK_URL+'/slashCommands'"
+        },
+        {
+            "name": "interactiveMessagesUrl",
+            "label": "Interactive messages URL",
+            "description": "This is the URL you need to set as 'Request URL' in 'Interactive Messages' page of your app.",
+            "type": "label",
+            "value": "config.WEBHOOK_URL+'/interactiveMessages'"
+        },
+        {
+            "name": "optionsLoadUrl",
+            "label": "Options load URL",
+            "description": "This is the URL you need to set as 'Options Load URL' in 'Interactive Messages' page of your app.",
+            "type": "label",
+            "value": "config.WEBHOOK_URL+'/optionsLoad'"
+        },
+        {
+            "name": "eventsUrl",
+            "label": "Events URL",
+            "description": "This is the URL you need to set as 'Request URL' in 'Event Subscriptions' page of your app. Keep in mind that the endpoint must be deployed in order to interact with the Slack configuration page.",
+            "type": "label",
+            "value": "config.WEBHOOK_URL+'/events'"
+        },
+        {
+            "name": "appConfig",
+            "label": "Configuration",
+            "value": "This endpoint permits to connect your SLINGR app with your Slack team to exchange information and interact with the users through Slack channels, Slash commands and Slack buttons (interactive messages). Configure the Slack app as follow:<ul><li>Access to the <a href='https://api.slack.com/apps?new_app=1' target='_blank'>New app page</a></li><li>Select an app name and a team. Push 'Create App' button.</li><li><b>Bot Users</b>: push 'Add a Bot User', select a bot username and save.</li><li><b>Slash Commands</b>: If you want to use slash commands, you need to create them using the 'Slash commands URL' from this form as 'Request URL'. Copy the <b>Verification Token</b> from 'Basic Information' (App Credentials -> Verification Token) to this form.</li><li><b>Interactive Messages</b>: Enable interactive messages and copy the 'Interactive message URL' from this form to as 'Request URL'</li><li><b>Check scopes</b>: got to 'OAuth & Permissions'. Check that the following permisions are selected on 'Permission Scopes' section: <ul><li>bot</li><li>commands (optional if there are slash commands defined)</li><li>chat:write:user (optional if you want to post message in name of the users)</li></ul></li><li><b>Install app to your team</b>: click 'Install app to team' button and authorize: <ul><li>Copy <b>OAuth Access Token</b> to 'User API token' on this form</li><li>Copy <b>User OAuth Access Token</b> to 'Bot API token' on this form</li></ul></li><li><b>Events Subscriptions</b>: Before to enable the service, the endpoint must be deployed because Slack will check its availability. With this endpoint running, enable the events on the Slack app configuration page and copy the 'Events URL' on this form to the 'Request URL'. After that the URL should be verified by Slack. Subscribe to the team and bot events that you want and reinstall the application on the 'Install App' page to accept the new selected permissions.</li></ul>Documentation: <a href='https://api.slack.com/slack-apps' target='_blank'>Building Slack apps</a> and <a href='https://api.slack.com/internal-integrations' target='_blank'>Building internal integrations for your team</a>",
+            "type": "info"
+        }
+    ]
+}
