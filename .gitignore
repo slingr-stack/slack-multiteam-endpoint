@@ -3,3 +3,5 @@ target/
 .idea/
 endpoint_proxy.properties
 /bin/
+run.sh
+test.sh
