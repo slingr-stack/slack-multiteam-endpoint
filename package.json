@@ -22,7 +22,6 @@
     "deasync": "^0.1.10",
     "express": "^4.15.3",
     "fs": "0.0.1-security",
-    "le_node": "^1.7.1",
     "locks": "^0.2.2",
     "moment": "^2.18.1",
     "request": "^2.81.0",
