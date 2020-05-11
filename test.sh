@@ -21,8 +21,6 @@ export _base_domain=localhost:8000
 export _endpoints_services_api=http://localhost:2233/api
 export _token=test1/dev/slack
 
-# export LOGENTRIES_TOKEN=2e47ebe8-46ae-48db-90ca-63fbb2a16924
-
 # Endpoint specific properties
 export _endpoint_config="{\"botApiToken\":\"xoxb-5120336017-qQio0GZWTBVQ8vbdTD14AcLj\",\"slashCommandsToken\":\"rQleuiNAX8B8JB3nL0vAvZ8U\"}"
 

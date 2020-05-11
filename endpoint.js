@@ -10,7 +10,6 @@
         express = require('express'),
         bodyParser = require('body-parser'),
         moment = require('moment'),
-        logentries = require('le_node'),
         requestRetry = require('requestretry'),
         http = require('http'),
         https = require('https'),
@@ -39,7 +38,6 @@
         SSL_CERT: '',
         _custom_domain : '',
         _base_domain : 'localhost:8000',
-        LOGENTRIES_TOKEN : '',
         _endpoint_config : {}
     };
 
@@ -63,7 +61,6 @@
         // System properties
         _custom_domain:     domainCustom,
         _base_domain:       domainBase,
-        LOGENTRIES_TOKEN:   logentriesToken,
         // Endpoint specific properties
         _endpoint_config:   _endpoint_config
     } = settings;
@@ -86,19 +83,7 @@
     // Logger configuration
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const logentriesLogger = logentriesToken ? new logentries({
-        token: logentriesToken,
-        timestamp: false,
-        withLevel: false,
-        console: false
-    }) : null;
-
-    const logLocalFormat = (level, message) =>
-        moment().format('MM-DD HH:mm:ss.SSS') +
-        ' [' + level + ' '.repeat(5 - level.length) + '] ' +
-        message;
-
-    const logLogentriesFormat = (level, message) =>
+    const formatLog = (level, message) =>
         moment().format('YYYY-MM-DD HH:mm:ss.SSS ZZ') + ' comp=endpoint ' +
         'level=' + level + ' ' +
         'podId=' + podId + ' ' +
@@ -109,37 +94,25 @@
     
     const logDebug = message => {
         if (message && debug) {
-            console.log(logLocalFormat('DEBUG', message));
-            if (logentriesLogger) {
-                logentriesLogger.debug(logLogentriesFormat('DEBUG', message))
-            }
+            console.log(formatLog('DEBUG', message));
         }
     };
 
     const logInfo = message => {
         if (message) {
-            console.info(logLocalFormat('INFO', message));
-            if (logentriesLogger) {
-                logentriesLogger.info(logLogentriesFormat('INFO', message))
-            }
+            console.info(formatLog('INFO', message));
         }
     };
 
     const logWarn = message => {
         if (message) {
-            console.warn(logLocalFormat('WARN', message));
-            if (logentriesLogger) {
-                logentriesLogger.warning(logLogentriesFormat('WARN', message))
-            }
+            console.warn(formatLog('WARN', message));
         }
     };
 
     const logError = message => {
         if (message) {
-            console.error(logLocalFormat('ERROR', message));
-            if (logentriesLogger) {
-                logentriesLogger.err(logLogentriesFormat('ERROR', message))
-            }
+            console.error(formatLog('ERROR', message));
         }
     };
 
@@ -169,13 +142,11 @@
 
     const webhookUrl = domain + '/endpoints/' + endpointName;
 
-    const maskedLogentriesToken = maskToken(logentriesToken);
     const proto = useSsl ? 'https' : 'http';
     logInfo('Configured endpoint [' + endpointName + ']: '+
         proto + ' [0.0.0.0:' + webServicesPort + '], '+
         'webhook [' + webhookUrl + '], '+
         'token [' + maskedToken + '], '+
-        'logentries [' + maskedLogentriesToken + ']'+
         (localDeployment ? ', local deployment' : '')
     );
 
