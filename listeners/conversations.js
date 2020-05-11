@@ -13,7 +13,7 @@ listeners.catchRtmEvents = {
 };
 
 listeners.catchRtmEvents = {
-    label: 'Catch RTM events',
+    label: 'Catch HTTP events',
     type: 'endpoint',
     options: {
         endpoint: endpoint.name,
