@@ -396,7 +396,7 @@
         let eventBody = {
             date: parseInt(moment().format("x")),
             event: eventName,
-            data: data
+            data: data.event
         };
         if(!!fromFunction){
             eventBody.fromFunction = fromFunction;
