@@ -273,22 +273,16 @@ var triggerConvo = function(id, channelId, userId) {
  **/
 var handleConvos = function(event) {
     var botUserId = getBotUserId();
-    sys.logs.info('*** 1');
     if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
-        sys.logs.info('*** 2');
         if (event.data.type != 'message') {
-            sys.logs.info('*** 3');
             // if this is not a message we can discard it completely
             return false;
         }
-        sys.logs.info('*** 4');
         if (event.data.user == botUserId) {
-            sys.logs.info('*** 5');
             // ignore messages comming from the bot to avoid loops
             return false;
         }
         // first check some system commands
-        sys.logs.info('*** 6');
         if (matchMessage(event, '\\#cleanup', ['direct_message','direct_mention','mention'], function(message, event) {
                 // clear current conversation if it exists
                 sys.storage.remove(buildConvoId(event));
@@ -296,7 +290,6 @@ var handleConvos = function(event) {
             })) {
             return false;
         }
-        sys.logs.info('*** 7');
         var addInfoToMessage = function(msg, e) {
             msg.user_id = e.data.user;
             msg.user = '<@'+e.data.user+'>';
@@ -306,20 +299,16 @@ var handleConvos = function(event) {
         // continue with user-defined conversations
         var convoId = buildConvoId(event);
         var convo = sys.storage.get(convoId);
-        sys.logs.info('*** 8');
         if (convo) {
-            sys.logs.info('*** 9');
             // there is a conversation in place
             convo = new Convo(convo);
             if (convo.isWaiting()) {
-                sys.logs.info('*** 10');
                 var callbacks = JSON.parse(convo.callbacks);
                 // build message param
                 var message = {
                     text: event.data.text
                 };
                 addInfoToMessage(message, event);
-                sys.logs.info('*** 11');
                 // update info in conversation
                 convo.message = message;
                 convo.event = event;
@@ -345,20 +334,16 @@ var handleConvos = function(event) {
                         sys.storage.remove(convoId);
                     }
                 };
-                sys.logs.info('*** 12');
                 var match = false;
                 for (var i in callbacks) {
                     var callback = callbacks[i];
                     if (callback['default']) {
-                        sys.logs.info('*** 13');
                         // if this is the default callback, we execute it
                         executeCallback(callback, message, event);
                         match = true;
                         break;
                     } else {
-                        sys.logs.info('*** 14');
                         if (matchMessage(event, callback.patterns, null, function(message, event) {
-                                sys.logs.info('*** 15');
                                 addInfoToMessage(message, event);
                                 executeCallback(callback, message, event);
                             })) {
@@ -374,12 +359,10 @@ var handleConvos = function(event) {
             // if we get to this point, this is probably a dead conversation and we have to remove it
             sys.storage.remove(convoId);
         }
-        sys.logs.info('*** 16');
         // there is no active conversation; see if it matches any of the conversations we have
         for (var id in registeredConvos) {
             var registeredConvo = registeredConvos[id];
             matchMessage(event, registeredConvo.patterns, registeredConvo.messageTypes, function(message, event) {
-                sys.logs.info('*** 17');
                 // we need to start a new conversation
                 addInfoToMessage(message, event);
                 convo = new Convo({message: message, event: event});
