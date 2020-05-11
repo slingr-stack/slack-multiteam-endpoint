@@ -12,7 +12,7 @@ listeners.catchRtmEvents = {
     }
 };
 
-listeners.catchRtmEvents = {
+listeners.catchHttpEvents = {
     label: 'Catch HTTP events',
     type: 'endpoint',
     options: {
