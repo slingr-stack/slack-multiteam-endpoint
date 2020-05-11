@@ -13,7 +13,7 @@ var registeredConvos = {};
  **/
 var matchMessage = function(event, patterns, messageTypes, callback) {
     var botUserId = getBotUserId();
-    if (event.endpointEvent == 'eventArrived') {
+    if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
         var msg = event.data;
         if (msg.type != 'message') {
             // if this is not a message we can discard it completely
@@ -165,7 +165,7 @@ var matchMessage = function(event, patterns, messageTypes, callback) {
  **/
 var reply = function(event, msg) {
     var channel = '';
-    if (event.endpointEvent == 'eventArrived') {
+    if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
         channel = event.data.channel;
     } else if (event.endpointEvent == 'interactiveMessage') {
         channel = event.data.channel.id;
@@ -192,7 +192,7 @@ var reply = function(event, msg) {
  **/
 var replace = function(event, msg) {
     var channel, ts;
-    if (event.endpointEvent == 'eventArrived' && event.data.type == 'message') {
+    if ((event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') && event.data.type == 'message') {
         channel = event.data.channel;
         ts = event.data.ts;
     } else if (event.endpointEvent == 'interactiveMessage') {
@@ -273,7 +273,7 @@ var triggerConvo = function(id, channelId, userId) {
  **/
 var handleConvos = function(event) {
     var botUserId = getBotUserId();
-    if (event.endpointEvent == 'eventArrived') {
+    if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
         if (event.data.type != 'message') {
             // if this is not a message we can discard it completely
             return false;
@@ -586,7 +586,7 @@ var Convo = function(info) {
 };
 
 var buildConvoId = function(event) {
-    if (event.endpointEvent == 'eventArrived') {
+    if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
         return convoPrefix+event.data.user+'_'+event.data.channel;
     } else if (event.endpointEvent == 'interactiveMessage') {
         return convoPrefix+event.data.user.id+'_'+event.data.channel.id;
