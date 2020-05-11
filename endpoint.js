@@ -38,7 +38,6 @@
         SSL_CERT: '',
         _custom_domain : '',
         _base_domain : 'localhost:8000',
-        LOGENTRIES_TOKEN : '',
         _endpoint_config : {}
     };
 
@@ -84,12 +83,7 @@
     // Logger configuration
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const logLocalFormat = (level, message) =>
-        moment().format('MM-DD HH:mm:ss.SSS') +
-        ' [' + level + ' '.repeat(5 - level.length) + '] ' +
-        message;
-
-    const logLogentriesFormat = (level, message) =>
+    const formatLog = (level, message) =>
         moment().format('YYYY-MM-DD HH:mm:ss.SSS ZZ') + ' comp=endpoint ' +
         'level=' + level + ' ' +
         'podId=' + podId + ' ' +
@@ -100,25 +94,25 @@
     
     const logDebug = message => {
         if (message && debug) {
-            console.log(logLocalFormat('DEBUG', message));
+            console.log(formatLog('DEBUG', message));
         }
     };
 
     const logInfo = message => {
         if (message) {
-            console.info(logLocalFormat('INFO', message));
+            console.info(formatLog('INFO', message));
         }
     };
 
     const logWarn = message => {
         if (message) {
-            console.warn(logLocalFormat('WARN', message));
+            console.warn(formatLog('WARN', message));
         }
     };
 
     const logError = message => {
         if (message) {
-            console.error(logLocalFormat('ERROR', message));
+            console.error(formatLog('ERROR', message));
         }
     };
 
