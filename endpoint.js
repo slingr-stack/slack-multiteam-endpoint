@@ -1116,7 +1116,6 @@
     webhookRouter.post('/interactiveMessages', (req, res) => {
         // check payload
         let payload = {};
-        logInfo('*** payload: '+ req.body.payload);
         if(req.body && req.body.payload) {
             payload = JSON.parse(''+req.body.payload);
         }
@@ -1131,6 +1130,7 @@
                 validToken = true
             }
             if (validToken) {
+                payload = {event: payload}
                 sendEvent(INTERACTIVE_MESSAGE, payload, payload.callback_id);
                 res.send()
             } else {
