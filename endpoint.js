@@ -1116,6 +1116,7 @@
     webhookRouter.post('/interactiveMessages', (req, res) => {
         // check payload
         let payload = {};
+        logInfo('*** payload: '+ req.body.payload);
         if(req.body && req.body.payload) {
             payload = JSON.parse(''+req.body.payload);
         }
