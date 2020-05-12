@@ -1171,6 +1171,7 @@
 
         let options;
         try {
+            payload = {event: payload}
             options = sendEvent(OPTIONS_LOAD, payload, null, null, true);
         } catch (ex){
             appLogError("There was an error loading options: " + JSON.stringify(ex));
