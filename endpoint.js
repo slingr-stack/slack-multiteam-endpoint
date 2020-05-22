@@ -396,7 +396,7 @@
         let eventBody = {
             date: parseInt(moment().format("x")),
             event: eventName,
-            data: data.event
+            data: data
         };
         if(!!fromFunction){
             eventBody.fromFunction = fromFunction;
@@ -1058,7 +1058,7 @@
     // Events API: Http events
     /////////////////////
 
-    const processReceivedHttpEvent = message => sendEvent(EVENT_API_EVENT_ARRIVED, message, message && message.event ? message.event.type : null);
+    const processReceivedHttpEvent = message => sendEvent(EVENT_API_EVENT_ARRIVED, message.event, message && message.event ? message.event.type : null);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // HTTP service: Webhook
@@ -1130,7 +1130,6 @@
                 validToken = true
             }
             if (validToken) {
-                payload = {event: payload}
                 sendEvent(INTERACTIVE_MESSAGE, payload, payload.callback_id);
                 res.send()
             } else {
@@ -1171,7 +1170,6 @@
 
         let options;
         try {
-            payload = {event: payload}
             options = sendEvent(OPTIONS_LOAD, payload, null, null, true);
         } catch (ex){
             appLogError("There was an error loading options: " + JSON.stringify(ex));
