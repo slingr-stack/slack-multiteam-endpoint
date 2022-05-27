@@ -372,6 +372,10 @@ var handleConvos = function(event) {
             });
         }
     } else if (event.endpointEvent == 'interactiveMessage') {
+        if (event.data.type == 'view_submission') {
+            // This type of event is avoided due to lack of channel information in the event payload. 
+            return;
+        }
         var addInfoToMessage = function(msg, e) {
             msg.user_id = e.data.user.id;
             msg.user = '<@'+e.data.user.id+'>';
