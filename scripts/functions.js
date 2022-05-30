@@ -95,6 +95,12 @@ endpoint.conversations.unarchive  = function(options){ return slackFunction('con
 endpoint.dialog = {};
 endpoint.dialog.open           = function(options){ return slackFunction('dialog.open',	options) };
 
+endpoint.views = {};
+endpoint.views.open           = function(options){ return slackFunction('views.open',	options) };
+endpoint.views.update           = function(options){ return slackFunction('views.update',	options) };
+endpoint.views.publish           = function(options){ return slackFunction('views.publish',	options) };
+endpoint.views.push           = function(options){ return slackFunction('views.push',	options) };
+
 endpoint.dnd = {};
 endpoint.dnd.endDnd 		= function(options){ return slackFunction('dnd.endDnd',		options) };
 endpoint.dnd.endSnooze 		= function(options){ return slackFunction('dnd.endSnooze',	options) };
