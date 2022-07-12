@@ -1,6 +1,6 @@
 {
-    "label": "Slack",
-    "name": "slack",
+    "label": "Slack Multi-team",
+    "name": "slackmultiteam",
     "apiVersion": "v1",
     "internal": false,
     "configurationType": "GLOBAL",
