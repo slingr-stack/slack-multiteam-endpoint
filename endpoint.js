@@ -415,7 +415,7 @@
                         let json = JSON.parse('' + response);
                         response = json;
                     } catch (e) {
-                        logDebug('Error: ' + JSON.stringify(e) + ', response: '+response);
+                        logDebug('Error: ' + JSON.stringify(e) + ', response: '+JSON.stringify(response));
                     }
                     logDebug('[SYNC EVENT][' + eventName + '][type: ' + (type || response.type || '-') + '] >> [SENT]')
                 } else {
@@ -676,10 +676,6 @@
 
     const cacheDataStore = new slackClient.MemoryDataStore();
 
-    /*const web = new slackClient.WebClient(botApiToken, {
-        // Sets the level of logging we require
-        logLevel: 'debug'
-    });*/
     let slackClients = {};
 
     let rtmClients = {};
@@ -1102,6 +1098,15 @@
         } else {
             logWarn("Invalid token on incoming event");
             res.status(401).send('Invalid token')
+        }
+    });
+
+    webhookRouter.get('/OAuthCallback', (req, res) => {
+        let listenerResponse = sendEvent('authenticationCodeReceived', {code: req.query.code}, null, null, true);
+        if (listenerResponse && listenerResponse.location) {
+            res.redirect(301, listenerResponse.location);
+        } else {
+            res.send({ok: true});
         }
     });
 
