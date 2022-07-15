@@ -12,17 +12,17 @@ var registeredConvos = {};
  returns true if there is a match; false otherwise
  **/
 var matchMessage = function(event, patterns, messageTypes, callback) {
-    var botUserId = getBotUserId();
+    //var botUserId = getBotUserId();
     if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
         var msg = event.data;
         if (msg.type != 'message') {
             // if this is not a message we can discard it completely
             return false;
         }
-        if (msg.user == botUserId) {
+      //  if (msg.user == botUserId) {
             // ignore messages comming from the bot to avoid loops
-            return false;
-        }
+        //    return false;
+        //}
         if (msg.subtype) {
             // we ignore any subtype, like when a message is replaced
             return false;
@@ -272,16 +272,16 @@ var triggerConvo = function(id, channelId, userId) {
  - event: event from slack
  **/
 var handleConvos = function(event) {
-    var botUserId = getBotUserId();
+    //var botUserId = getBotUserId();
     if (event.endpointEvent == 'eventArrived' || event.endpointEvent == 'httpEventArrived') {
         if (event.data.type != 'message') {
             // if this is not a message we can discard it completely
             return false;
         }
-        if (event.data.user == botUserId) {
+        //if (event.data.user == botUserId) {
             // ignore messages comming from the bot to avoid loops
-            return false;
-        }
+          //  return false;
+        //}
         // first check some system commands
         if (matchMessage(event, '\\#cleanup', ['direct_message','direct_mention','mention'], function(message, event) {
                 // clear current conversation if it exists

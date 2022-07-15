@@ -676,10 +676,45 @@
 
     const cacheDataStore = new slackClient.MemoryDataStore();
 
-    const web = new slackClient.WebClient(botApiToken, {
+    /*const web = new slackClient.WebClient(botApiToken, {
         // Sets the level of logging we require
         logLevel: 'debug'
-    });
+    });*/
+    let slackClients = {};
+
+    let rtmClients = {};
+
+    let getClientForToken = function (botApiToken) {
+        if(!slackClients[botApiToken]) {
+            slackClients[botApiToken] = new slackClient.WebClient(botApiToken, { logLevel: 'debug' });
+
+            const processReceivedEvent = message => sendEvent(RTM_API_EVENT_ARRIVED, message);
+            rtmClients[botApiToken] = new slackClient.RtmClient(botApiToken, { logLevel: 'warning',  dataStore: cacheDataStore })
+
+            rtmClients[botApiToken].on(slackClient.CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+                logInfo('Slack RTM connection open');
+        
+                // send 'hello' to app
+                processReceivedEvent({type: "hello"})
+            });
+        
+            rtmClients[botApiToken].on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, () =>
+                appLogError('Slack client has disconnected and will not try to reconnect again automatically. Please check your configuration and restart the endpoint.')
+            );
+        
+            // subscribe to RTM events
+            for (let eventName in slackClient.RTM_EVENTS) {
+                if (eventName != 'USER_TYPING' && eventName != 'RECONNECT_URL') {
+                    if(slackClient.RTM_EVENTS.hasOwnProperty(eventName)) {
+                        rtmClients[botApiToken].on(slackClient.RTM_EVENTS[eventName], processReceivedEvent)
+                    }
+                }
+            }
+        
+            rtmClients[botApiToken].start();
+        }
+        return slackClients[botApiToken];
+    };
 
     const userWeb = userApiToken ? new slackClient.WebClient(userApiToken, {
         // Sets the level of logging we require
@@ -698,7 +733,7 @@
     /////////////////////
 
     // generic call to the web api
-    const _slackRequest = (endpoint, data, cb) => {
+    const _slackRequest = (endpoint, data, botToken, cb) => {
         data = data || {};
         if (userWeb && !!data.send_as_user) {
             userWeb._makeAPICall(endpoint, data, null, (err, msg) => {
@@ -723,6 +758,7 @@
                 }
             })
         } else {
+            let web = getClientForToken(botToken);
             web._makeAPICall(endpoint, data, null, (err, msg) => {
                 let newError = null;
                 if(!!err){
@@ -786,6 +822,12 @@
         if (!data || !data.path) {
             throw 'Empty path'
         }
+
+        if (!data.botToken) {
+            throw 'Empty bot token';
+        }
+        let botToken = data.botToken;
+        delete data.botToken;
         let path = data.path;
         logDebug('[FUNCTION] Executing function request to [' + path + ']');
 
@@ -799,7 +841,7 @@
                 response = _syncSlackRequestUploadFile(params, file);
             }
         } else {
-            response = _syncSlackRequest(path, params);
+            response = _syncSlackRequest(path, params, botToken);
         }
         if (!!params.doOldConversions) {
             response = doConversionsOnMessage(response);
@@ -1027,38 +1069,10 @@
     ];
 
     /////////////////////
-    // Real Time Messages: Real time events
-    /////////////////////
-
-    const processReceivedEvent = message => sendEvent(RTM_API_EVENT_ARRIVED, message);
-
-    rtm.on(slackClient.CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-        logInfo('Slack RTM connection open');
-
-        // send 'hello' to app
-        processReceivedEvent({type: "hello"})
-    });
-
-    rtm.on(slackClient.CLIENT_EVENTS.RTM.DISCONNECT, () =>
-        appLogError('Slack client has disconnected and will not try to reconnect again automatically. Please check your configuration and restart the endpoint.')
-    );
-
-    // subscribe to RTM events
-    for (let eventName in slackClient.RTM_EVENTS) {
-        if (eventName != 'USER_TYPING' && eventName != 'RECONNECT_URL') {
-            if(slackClient.RTM_EVENTS.hasOwnProperty(eventName)) {
-                rtm.on(slackClient.RTM_EVENTS[eventName], processReceivedEvent)
-            }
-        }
-    }
-
-    rtm.start();
-
-    /////////////////////
     // Events API: Http events
     /////////////////////
 
-    const processReceivedHttpEvent = message => sendEvent(EVENT_API_EVENT_ARRIVED, message.event, message && message.event ? message.event.type : null);
+    const processReceivedHttpEvent = message => sendEvent(EVENT_API_EVENT_ARRIVED, message, message && message.event ? message.event.type : null);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // HTTP service: Webhook
